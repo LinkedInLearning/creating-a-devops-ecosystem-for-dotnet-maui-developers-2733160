@@ -1,5 +1,5 @@
-# COURSENAME
-This is the repository for the LinkedIn Learning course `course-name`. The full course is available from [LinkedIn Learning][lil-course-url].
+# Creating a DevOps Ecosystem for .NET Maui Developers
+This is the repository for the LinkedIn Learning course Creating a DevOps Ecosystem for .NET Maui Developers. The full course is available from [LinkedIn Learning][lil-course-url].
 
 _See the readme file in the main branch for updated instructions and information._
 ## Instructions
