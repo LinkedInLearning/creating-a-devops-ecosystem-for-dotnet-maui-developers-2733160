@@ -1,0 +1,33 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+   exclude:
+     - '*'
+
+pr:
+  branches:
+    include:
+      - main
+
+jobs:
+- job: Build_Main
+  displayName: 'Build Main'
+  pool:
+   vmImage: 'macos-latest'
+   demands: xcode
+
+  steps:
+   
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '9.x'
+
+  - task: CmdLine@2
+    displayName: "dotnet workload restore"
+    inputs:
+      script: 'dotnet workload restore'
