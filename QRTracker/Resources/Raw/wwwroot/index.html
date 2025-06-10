@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About QR Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        .features {
+            margin-top: 20px;
+        }
+
+            .features ul {
+                padding-left: 20px;
+            }
+
+                .features ul li {
+                    margin-bottom: 10px;
+                }
+    </style>
+    <script src="scripts/HybridWebView.js"></script>
+    <script>
+        async function gotoEULA(eualAccepted) {
+            window.location.href = "eula.html?eulaAccepted=" + eualAccepted.toString();
+            let jsonObject = JSON.stringify("OK");
+            return jsonObject;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>About QR Tracker</h1>
+        <p><strong>QR Tracker</strong> is a powerful application designed to help you manage, scan, and track QR codes with ease. Whether you're a business owner looking to monitor QR code campaigns or an individual managing personal QR links, QR Tracker is your go-to solution.</p>
+
+        <div class="features">
+            <h2>Features</h2>
+            <ul>
+                <li>Generate and customize QR codes for personal or business use.</li>
+                <li>Scan and track QR codes in real-time.</li>
+                <li>Analyze QR code performance with detailed analytics.</li>
+                <li>Organize and categorize QR codes for better management.</li>
+                <li>Export data and reports for business insights.</li>
+            </ul>
+        </div>
+
+        <h2>Why Choose QR Tracker?</h2>
+        <p>QR Tracker is designed with simplicity and efficiency in mind. Our user-friendly interface ensures that anyone can start tracking and managing QR codes in just a few clicks. With powerful analytics and robust features, QR Tracker makes it easy to understand how your QR codes are performing and optimize your strategies.</p>
+
+        <h2>Get Started Today</h2>
+        <p>Ready to take your QR code management to the next level? Download QR Tracker and experience the difference!</p>
+    </div>
+</body>
+</html>

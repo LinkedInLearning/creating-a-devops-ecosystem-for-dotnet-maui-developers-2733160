@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="QRTracker.OtherWindows.SecondaryWindow"
+    xmlns:local="clr-namespace:QRTracker.OtherWindows"
+    Title="Secondary Window">
+    <Window.Page>
+        <local:SecondaryWindowPage />
+    </Window.Page>
+    <Window.TitleBar>
+        <TitleBar x:Name="titleBar"
+              Title="QR Title"
+              BackgroundColor="Aquamarine">
+        </TitleBar>
+    </Window.TitleBar>
+</Window>
