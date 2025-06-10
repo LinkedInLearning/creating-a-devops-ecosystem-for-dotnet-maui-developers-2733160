@@ -13,6 +13,12 @@ pr:
     include:
       - main
 
+variables:
+  - name: buildConfiguration
+    value: 'Debug'
+  - name: outputDirectory
+    value: '$(Build.ArtifactStagingDirectory)/output'
+
 jobs:
 - job: Build_Main
   displayName: 'Build Main'
@@ -31,3 +37,10 @@ jobs:
     displayName: "dotnet workload restore"
     inputs:
       script: 'dotnet workload restore'
+  
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for Android'
+    inputs:
+     command: build
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-android --configuration $(buildConfiguration) --output $(outputDirectory)/Android'
