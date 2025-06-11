@@ -24,7 +24,7 @@ jobs:
 - job: Build_Main
   displayName: 'Build Main'
   pool:
-   vmImage: 'macos-latest'
+   vmImage: 'macos-15'
    demands: xcode
 
   steps:
@@ -38,6 +38,11 @@ jobs:
     displayName: "dotnet workload restore"
     inputs:
       script: 'dotnet workload restore'
+  
+  - task: CmdLine@2
+    displayName: "Select a specific version of Xcode"
+    inputs:
+      script: 'sudo xcode-select -s /Applications/Xcode_16.3.app'
   
   - task: DotNetCoreCLI@2
     displayName: 'Build project for Android'
@@ -54,3 +59,17 @@ jobs:
   - task: InstallAppleProvisioningProfile@1
     inputs:
       provProfileSecureFile: 'VS_comlinkedinlearningqrtracker_Development.mobileprovision'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for iOS'
+    inputs:
+     command: build
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-ios --configuration $(buildConfiguration) --output $(outputDirectory)/ios'
+  
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for MacOS'
+    inputs:
+     command: build
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-maccatalyst --configuration $(buildConfiguration) --output $(outputDirectory)/MacOS'
