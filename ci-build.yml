@@ -73,3 +73,28 @@ jobs:
      command: build
      projects: 'QRTracker/QrTracker.csproj'
      arguments: '-f net9.0-maccatalyst --configuration $(buildConfiguration) --output $(outputDirectory)/MacOS'
+
+- job: Build_Windows
+  displayName: 'Build Windows'
+  pool:
+   vmImage: 'windows-latest'
+
+  steps:
+   
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '9.x'
+
+  - task: CmdLine@2
+    displayName: "dotnet workload restore"
+    inputs:
+      script: 'dotnet workload restore'
+  
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for Windows'
+    inputs:
+     command: build
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-windows10.0.19041.0 --configuration $(buildConfiguration) --output $(outputDirectory)/Windows'
+
