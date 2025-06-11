@@ -1,4 +1,4 @@
-# Starter pipelineAdd commentMore actions
+# Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -9,13 +9,21 @@ trigger:
 variables:
   - group: BuildVariables
   - name: buildConfiguration
-    value: 'Debug'
+    value: 'Release'
   - name: outputDirectory
     value: '$(Build.ArtifactStagingDirectory)/output'
+  - name: codesignKey
+    value: 'Apple Distribution: kevin Ford (B4XFLSJ3F4)'
+  - name: packagesignKey
+    value: '3rd Party Mac Developer Installer: kevin Ford (B4XFLSJ3F4)'
+  - name: codesignProvisioningProfileiOS
+    value: 'LinkedIn Learning QRTracker'
+  - name: codesignProvisioningProfileMac
+    value: 'LinkedIn Learning QRTracker Mac'
 
 jobs:
-- job: Build_Main
-  displayName: 'Build Main'
+- job: Build_iOS
+  displayName: 'Build iOS'
   pool:
    vmImage: 'macos-15'
    demands: xcode
@@ -39,13 +47,15 @@ jobs:
 
 
   - task: InstallAppleCertificate@2
+    displayName: 'Add Distribution Certificate'
     inputs:
-      certSecureFile: 'AppleDeveloperCertificate.p12'
+      certSecureFile: 'AppleDistributionCertificate.p12'
       certPwd: '$(iOSCertPassword)'
 
   - task: InstallAppleProvisioningProfile@1
+    displayName: 'Add iOS Provisioning Profile'
     inputs:
-      provProfileSecureFile: 'VS_comlinkedinlearningqrtracker_Development.mobileprovision'
+      provProfileSecureFile: 'LinkedIn_Learning_QRTracker.mobileprovision'
 
   - task: DotNetCoreCLI@2
     displayName: 'Build project for iOS'
@@ -53,6 +63,40 @@ jobs:
      command: build
      projects: 'QRTracker/QrTracker.csproj'
      arguments: '-f net9.0-ios --configuration $(buildConfiguration) --output $(outputDirectory)/ios'
+  
+- job: Build_MacOS
+  displayName: 'Build MacOS'
+  pool:
+   vmImage: 'macos-15'
+   demands: xcode
+
+  steps:
+   
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '9.x'
+
+  - task: CmdLine@2
+    displayName: "dotnet workload restore"
+    inputs:
+      script: 'dotnet workload restore'
+  
+  - task: CmdLine@2
+    displayName: "Select a specific version of Xcode"
+    inputs:
+      script: 'sudo xcode-select -s /Applications/Xcode_16.3.app'
+
+  - task: InstallAppleCertificate@2
+    displayName: 'Add Installer Certificate'
+    inputs:
+      certSecureFile: 'AppleMacInstallerCertificate.p12'
+      certPwd: '$(iOSCertPassword)'
+
+  - task: InstallAppleProvisioningProfile@1
+    displayName: 'Add MacOS Provisioning Profile'
+    inputs:
+      provProfileSecureFile: 'LinkedIn_Learning_QRTracker_Mac.provisionprofile'
   
   - task: DotNetCoreCLI@2
     displayName: 'Build project for MacOS'
