@@ -60,10 +60,48 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Build project for iOS'
     inputs:
-     command: build
+     command: publish
+     publishWebProjects: false
      projects: 'QRTracker/QrTracker.csproj'
-     arguments: '-f net9.0-ios --configuration $(buildConfiguration) --output $(outputDirectory)/ios'
+     arguments: '-f net9.0-ios --configuration $(buildConfiguration) 
+     --output $(outputDirectory)/ios -p:CodesignKey="$(codesignKey)"
+     -p:codesignProvision="$(codesignProvisioningProfileiOS)"
+     -p:codesignEntitlements="Platforms/iOS/Entitlements.plist"
+     /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
+     /p:ApplicationDisplayVersion=1.1.$(Build.BuildId)
+     /p:ApplicationVersion=1.1.$(Build.BuildId)'
+     zipAfterPublish: false
+    env:
+      DISABLE_BITCODE: 'yes'
   
+  - task: CopyFiles@2
+    displayName: 'Copy iOS file from Build to Staging'
+    inputs:
+      SourceFolder: '$(outputDirectory)/ios/QRTracker'
+      Contents: 'QrTracker.ipa'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/iOSStaging'
+      CleanTargetFolder: true
+      OverWrite: true
+  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish iOS files'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/iOSStaging'
+      ArtifactName: 'ios drop'
+      publishLocation: 'Container'
+  
+  - task: AppStoreRelease@1
+    displayName: 'Push iOS App to App Store Connect'
+    inputs:
+      serviceEndpoint: 'Apple App Store Connect'
+      releaseTrack: 'TestFlight'
+      appIdentifier: 'com.linkedinlearning.qrtracker'
+      ipaPath: '$(Build.ArtifactStagingDirectory)/iOSStaging/*.ipa'
+      appType: 'iOS'
+      shouldSkipWaitingForProcessing: true
+      shouldSkipSubmission: true
+      appSpecificId: '6743451240'
+
 - job: Build_MacOS
   displayName: 'Build MacOS'
   pool:
