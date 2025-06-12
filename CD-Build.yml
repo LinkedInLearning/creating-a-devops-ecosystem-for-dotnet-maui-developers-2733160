@@ -107,6 +107,7 @@ jobs:
   pool:
    vmImage: 'macos-15'
    demands: xcode
+  condition: eq(1,2)
 
   steps:
    
@@ -130,7 +131,7 @@ jobs:
     inputs:
       certSecureFile: 'AppleDistributionCertificate.p12'
       certPwd: '$(iOSCertPassword)'
-      
+
   - task: InstallAppleCertificate@2
     displayName: 'Add Installer Certificate'
     inputs:
@@ -187,4 +188,4 @@ jobs:
       appType: 'macOS'
       shouldSkipWaitingForProcessing: true
       shouldSkipSubmission: true
-      appSpecificId: '6743451240'
+      appSpecificId: '6743451240' 
