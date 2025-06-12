@@ -1,0 +1,18 @@
+{
+	"android": {
+		"autoStart": {
+			"beaconUrl": "https://bf09625ixa.bf.dynatrace.com/mbeacon",
+			"applicationId": "d135388a-4a9b-4a85-942c-9f1e0999df44"
+		},
+		"userOptIn": true,
+		"agentBehavior": {
+			"startupLoadBalancing": true
+		}
+	},
+	"ios": {
+		"DTXApplicationId": "d135388a-4a9b-4a85-942c-9f1e0999df44",
+		"DTXBeaconUrl": "https://bf09625ixa.bf.dynatrace.com/mbeacon",
+		"DTXUserOptIn": true,
+		"DTXStartupLoadBalancing": true
+	}
+}

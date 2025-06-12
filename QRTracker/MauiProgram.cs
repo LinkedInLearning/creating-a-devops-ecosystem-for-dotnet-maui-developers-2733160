@@ -37,6 +37,10 @@ public static class MauiProgram
         });
 #endif
 
+#if ANDROID || IOS
+        Dynatrace.MAUI.Agent.Instance.Start();
+#endif
+
         return builder.Build();
     }
 
