@@ -39,6 +39,7 @@ public static class MauiProgram
 
 #if ANDROID || IOS
         Dynatrace.MAUI.Agent.Instance.Start();
+        Dynatrace.MAUI.Agent.Instance.ApplyUserPrivacyOptions(new Dynatrace.MAUI.UserPrivacyOptions(Dynatrace.MAUI.DataCollectionLevel.UserBehavior, true));
 #endif
 
         return builder.Build();

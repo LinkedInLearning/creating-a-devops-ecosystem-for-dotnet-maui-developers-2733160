@@ -1,4 +1,5 @@
 ﻿
+using Dynatrace.MAUI;
 using QRTracker.Constants;
 using QRTracker.Shared.Models;
 
@@ -25,13 +26,33 @@ public class QRItemDetailViewModel : BaseViewModel
 
     private async Task OnSave()
     {
-        var pageParams = new ShellNavigationQueryParameters();
-        if (QRCodeItem != null)
+#if ANDROID || IOS
+        IRootAction myAction = Dynatrace.MAUI.Agent.Instance.EnterAction("QR Item Updated");
+        try
         {
-            pageParams.Add("UpdatedQRCode", QRCodeItem);
-        }
+#endif
+            var pageParams = new ShellNavigationQueryParameters();
+            if (QRCodeItem != null)
+            {
+                pageParams.Add("UpdatedQRCode", QRCodeItem);
+#if ANDROID || IOS
+                myAction.ReportValue("Item Id", QRCodeItem.Id);
+#endif
+            }
 
-        await Shell.Current.GoToAsync("..", true, pageParams);
+            await Shell.Current.GoToAsync("..", true, pageParams);
+#if ANDROID || IOS
+        }
+        catch (Exception ex)
+        {
+            myAction.ReportError(ex.Message, ex.HResult);
+            throw;
+        }
+        finally
+        {
+            myAction.LeaveAction();
+        }
+#endif
     }
 
     private Command? _CancelCommand;
