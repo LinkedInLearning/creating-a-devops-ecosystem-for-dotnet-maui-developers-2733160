@@ -104,6 +104,42 @@ jobs:
       script: |
         mv $(keystore.secureFilePath) $(System.DefaultWorkingDirectory)
 
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for Android'
+    inputs:
+     command: publish
+     publishWebProjects: false
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-android --configuration $(buildConfiguration)
+     --output $(outputDirectory)/Android
+     /p:AndroidPackageFormat=aab
+     /P:ApplicationDisplayVersion=1.1.$(Build.BuildId)
+     /p:ApplicationVersion=$(Build.BuildId)
+     /p:AndroidSigningKeyPass=$(KeystorePassword)
+     /p:AndroidSigningStorePass=$(KeystorePassword)
+     /p:AndroidSigningKeystore=$(System.DefaultWorkingDirectory)\\$(keystoreName)
+     /p:AndroidSigningKeyAlias=$(KeystoreAlias)
+     /p:AndroidKeyStore=true'
+     zipAfterPublish: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy Android files from Build to Staging'
+    inputs:
+      SourceFolder: '$(outputDirectory)/Android/QRTracker'
+      Contents: |
+        *Signed.apk
+        *Signed.aab
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/AndroidStaging'
+      CleanTargetFolder: true
+      OverWrite: true
+  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Android files'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/AndroidStaging'
+      ArtifactName: 'Android drop'
+      publishLocation: 'Container'
+
   - task: AppStoreRelease@1
     displayName: 'Push iOS App to App Store Connect'
     inputs:
