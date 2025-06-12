@@ -109,6 +109,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
+        <PackageReference Include="NewRelic.MAUI.Plugin" Version="1.1.10" />
         <PackageReference Include="Oscore.QrCodes.Maui" Version="1.1.1" />
     </ItemGroup>
 
