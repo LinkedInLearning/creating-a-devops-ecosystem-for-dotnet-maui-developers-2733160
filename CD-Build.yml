@@ -20,6 +20,8 @@ variables:
     value: 'LinkedIn Learning QRTracker'
   - name: codesignProvisioningProfileMac
     value: 'LinkedIn Learning QRTracker Mac'
+  - name: keyStoreName
+    value: 'LinkedInClass.ks'
 
 jobs:
 - job: Build_iOS
@@ -27,7 +29,7 @@ jobs:
   pool:
    vmImage: 'macos-15'
    demands: xcode
-
+  
   steps:
    
   - task: UseDotNet@2
@@ -89,7 +91,19 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)/iOSStaging'
       ArtifactName: 'ios drop'
       publishLocation: 'Container'
+      
+  - task: DownloadSecureFile@1
+    displayName: "Download Android Keystore File"
+    name: keystore
+    inputs:
+      secureFile: '$(keyStoreName)'
   
+  - task: CmdLine@2
+    displayName: "Move Keystore to working directory"
+    inputs:
+      script: |
+        mv $(keystore.secureFilePath) $(System.DefaultWorkingDirectory)
+
   - task: AppStoreRelease@1
     displayName: 'Push iOS App to App Store Connect'
     inputs:
@@ -108,7 +122,7 @@ jobs:
    vmImage: 'macos-15'
    demands: xcode
   condition: eq(1,2)
-
+  
   steps:
    
   - task: UseDotNet@2
