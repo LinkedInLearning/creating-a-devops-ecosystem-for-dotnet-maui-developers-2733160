@@ -126,6 +126,12 @@ jobs:
       script: 'sudo xcode-select -s /Applications/Xcode_16.3.app'
 
   - task: InstallAppleCertificate@2
+    displayName: 'Add Distribution Certificate'
+    inputs:
+      certSecureFile: 'AppleDistributionCertificate.p12'
+      certPwd: '$(iOSCertPassword)'
+      
+  - task: InstallAppleCertificate@2
     displayName: 'Add Installer Certificate'
     inputs:
       certSecureFile: 'AppleMacInstallerCertificate.p12'
@@ -139,6 +145,46 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Build project for MacOS'
     inputs:
-     command: build
+     command: publish
+     publishWebProjects: false
      projects: 'QRTracker/QrTracker.csproj'
-     arguments: '-f net9.0-maccatalyst --configuration $(buildConfiguration) --output $(outputDirectory)/MacOS'
+     arguments: '-f net9.0-maccatalyst --configuration $(buildConfiguration) 
+     --output $(outputDirectory)/MacOS -p:CodesignKey="$(codesignKey)"
+     -p:codesignProvision="$(codesignProvisioningProfileMac)"
+     -p:EnablePackageSigning=true
+     -p:PackageSigningKey="$(packagesignKey)"
+     -p:codesignEntitlements="Platforms/MacCatalyst/Entitlements.plist"
+     /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
+     /p:ApplicationDisplayVersion=1.1.$(Build.BuildId)
+     /p:ApplicationVersion=1.1.$(Build.BuildId)'
+     zipAfterPublish: false
+    env:
+      DISABLE_BITCODE: 'yes'
+  
+  - task: CopyFiles@2
+    displayName: 'Copy MacOS file from Build to Staging'
+    inputs:
+      SourceFolder: '$(outputDirectory)/MacOS/QRTracker'
+      Contents: 'QrTracker*.pkg'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/MacOSStaging'
+      CleanTargetFolder: true
+      OverWrite: true
+  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish MacOS files'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/MacOSStaging'
+      ArtifactName: 'MacOS drop'
+      publishLocation: 'Container'
+  
+  - task: AppStoreRelease@1
+    displayName: 'Push MacOS App to App Store Connect'
+    inputs:
+      serviceEndpoint: 'Apple App Store Connect'
+      releaseTrack: 'TestFlight'
+      appIdentifier: 'com.linkedinlearning.qrtracker'
+      ipaPath: '$(Build.ArtifactStagingDirectory)/MacOSStaging/*.pkg'
+      appType: 'macOS'
+      shouldSkipWaitingForProcessing: true
+      shouldSkipSubmission: true
+      appSpecificId: '6743451240'
