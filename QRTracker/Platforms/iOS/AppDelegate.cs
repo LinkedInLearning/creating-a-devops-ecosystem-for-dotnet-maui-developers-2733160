@@ -55,4 +55,10 @@ public class AppDelegate : MauiUIApplicationDelegate, IUNUserNotificationCenterD
             WeakReferenceMessenger.Default.Send(message);
         }
     }
+
+    [Export("userNotificationCenter:willPresentNotification:withCompletionHandler:")]
+    public void WillPresentNotification(UNUserNotificationCenter center, UNNotification notification, Action<UNNotificationPresentationOptions> completionHandler)
+    {
+        completionHandler(UNNotificationPresentationOptions.Banner);
+    }
 }

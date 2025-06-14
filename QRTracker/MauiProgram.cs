@@ -57,6 +57,8 @@ public static class MauiProgram
 
 #if ANDROID
         builder.Services.AddScoped<Interfaces.INotificationRegistrationService, Platforms.Android.NotificationRegistrationService>();
+#elif IOS
+        builder.Services.AddScoped<Interfaces.INotificationRegistrationService, Platforms.iOS.NotificationRegistrationService>();
 #endif
     }
 }
