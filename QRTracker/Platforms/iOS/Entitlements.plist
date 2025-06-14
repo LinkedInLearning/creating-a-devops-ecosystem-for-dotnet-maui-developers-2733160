@@ -4,5 +4,11 @@
 <dict>
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>
+    <key>keychain-access-groups</key>
+    <array>
+        <string>com.linkedinlearning.qrtracker</string>
+    </array>
+    <key>aps-environment</key>
+    <string>development</string>
 </dict>
 </plist>
