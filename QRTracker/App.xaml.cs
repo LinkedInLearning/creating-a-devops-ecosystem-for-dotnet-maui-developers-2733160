@@ -66,12 +66,12 @@ public partial class App : Application
             {
                 Console.WriteLine("Notification permission denied.");
             }
+        }
 
-            if (status == PermissionStatus.Granted) 
-            {
-                var message = new RegisterDeviceMessage();
-                WeakReferenceMessenger.Default.Send(message);
-            }
+        if (status == PermissionStatus.Granted)
+        {
+            var message = new RegisterDeviceMessage();
+            WeakReferenceMessenger.Default.Send(message);
         }
 #endif
     }
