@@ -178,5 +178,11 @@
         <Compile Remove="**\*.Windows.cs" />
         <None Include="**\*.Windows.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+        <GoogleServicesJson Include="Platforms\Android\google-services.json" />
+        <PackageReference Include="Xamarin.Firebase.Messaging">
+        <Version>124.1.1.2</Version>
+      </PackageReference>
+    </ItemGroup>
 
 </Project>

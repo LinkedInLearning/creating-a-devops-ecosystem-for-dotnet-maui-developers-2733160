@@ -54,5 +54,9 @@ public static class MauiProgram
         {
             return NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://NetMAUIDevOpsClass.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=RAbQLvdmZboCJYiaJbEsqlcSkWDtdbpErivZUaF+biU=", "QRTracker", true);
         });
+
+#if ANDROID
+        builder.Services.AddScoped<Interfaces.INotificationRegistrationService, Platforms.Android.NotificationRegistrationService>();
+#endif
     }
 }
