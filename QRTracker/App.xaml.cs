@@ -4,6 +4,7 @@ using QRTracker.Helpers;
 using QRTracker.Interfaces;
 using QRTracker.ViewModels;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace QRTracker;
 
@@ -51,5 +52,27 @@ public partial class App : Application
     protected override Window CreateWindow(IActivationState? activationState)
     {
         return new MainAppWindow(_MainApplicationViewModel);
+    }
+
+    protected override async void OnStart()
+    {
+        base.OnStart();
+#if ANDROID
+        PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
+        if (status != PermissionStatus.Granted)
+        {
+            status = await Permissions.RequestAsync<Permissions.PostNotifications>();
+            if (status != PermissionStatus.Granted)
+            {
+                Console.WriteLine("Notification permission denied.");
+            }
+
+            if (status == PermissionStatus.Granted) 
+            {
+                var message = new RegisterDeviceMessage();
+                WeakReferenceMessenger.Default.Send(message);
+            }
+        }
+#endif
     }
 }
