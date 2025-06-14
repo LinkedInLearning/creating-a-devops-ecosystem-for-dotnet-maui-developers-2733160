@@ -4,6 +4,7 @@ using QRTracker.ViewModels;
 using Microsoft.Extensions.Logging;
 using QRTracker.Handlers;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Azure.NotificationHubs;
 
 namespace QRTracker;
 
@@ -47,5 +48,11 @@ public static class MauiProgram
         builder.Services.AddScoped<MainViewModel>();
         builder.Services.AddScoped<QRItemDetailViewModel>();
         builder.Services.AddScoped<MainApplicationWindowViewModel>();
+        builder.Services.AddSingleton<IConnectivity>(serviceProvider => { return Connectivity.Current; });
+
+        builder.Services.AddSingleton<INotificationHubClient>((IServiceProvider provider) =>
+        {
+            return NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://NetMAUIDevOpsClass.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=RAbQLvdmZboCJYiaJbEsqlcSkWDtdbpErivZUaF+biU=", "QRTracker", true);
+        });
     }
 }
