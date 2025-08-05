@@ -1,0 +1,250 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  - qa
+
+variables:
+  - group: BuildVariables
+  - name: buildConfiguration
+    value: 'Release'
+  - name: outputDirectory
+    value: '$(Build.ArtifactStagingDirectory)/output'
+  - name: codesignKey
+    value: 'Apple Distribution: kevin Ford (B4XFLSJ3F4)'
+  - name: packagesignKey
+    value: '3rd Party Mac Developer Installer: kevin Ford (B4XFLSJ3F4)'
+  - name: codesignProvisioningProfileiOS
+    value: 'LinkedIn Learning QRTracker'
+  - name: codesignProvisioningProfileMac
+    value: 'LinkedIn Learning QRTracker Mac'
+  - name: keyStoreName
+    value: 'LinkedInClass.ks'
+
+jobs:
+- job: Build_iOS
+  displayName: 'Build iOS'
+  pool:
+   vmImage: 'macos-15'
+   demands: xcode
+  
+  steps:
+   
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '9.x'
+
+  - task: CmdLine@2
+    displayName: "dotnet workload restore"
+    inputs:
+      script: 'dotnet workload restore'
+  
+  - task: CmdLine@2
+    displayName: "Select a specific version of Xcode"
+    inputs:
+      script: 'sudo xcode-select -s /Applications/Xcode_16.3.app'
+
+
+  - task: InstallAppleCertificate@2
+    displayName: 'Add Distribution Certificate'
+    inputs:
+      certSecureFile: 'AppleDistributionCertificate.p12'
+      certPwd: '$(iOSCertPassword)'
+
+  - task: InstallAppleProvisioningProfile@1
+    displayName: 'Add iOS Provisioning Profile'
+    inputs:
+      provProfileSecureFile: 'LinkedIn_Learning_QRTracker.mobileprovision'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for iOS'
+    inputs:
+     command: publish
+     publishWebProjects: false
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-ios --configuration $(buildConfiguration) 
+     --output $(outputDirectory)/ios -p:CodesignKey="$(codesignKey)"
+     -p:codesignProvision="$(codesignProvisioningProfileiOS)"
+     -p:codesignEntitlements="Platforms/iOS/Entitlements.plist"
+     /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
+     /p:ApplicationDisplayVersion=1.1.$(Build.BuildId)
+     /p:ApplicationVersion=1.1.$(Build.BuildId)'
+     zipAfterPublish: false
+    env:
+      DISABLE_BITCODE: 'yes'
+  
+  - task: CopyFiles@2
+    displayName: 'Copy iOS file from Build to Staging'
+    inputs:
+      SourceFolder: '$(outputDirectory)/ios/QRTracker'
+      Contents: 'QrTracker.ipa'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/iOSStaging'
+      CleanTargetFolder: true
+      OverWrite: true
+  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish iOS files'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/iOSStaging'
+      ArtifactName: 'ios drop'
+      publishLocation: 'Container'
+      
+  - task: DownloadSecureFile@1
+    displayName: "Download Android Keystore File"
+    name: keystore
+    inputs:
+      secureFile: '$(keyStoreName)'
+  
+  - task: CmdLine@2
+    displayName: "Move Keystore to working directory"
+    inputs:
+      script: |
+        mv $(keystore.secureFilePath) $(System.DefaultWorkingDirectory)
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for Android'
+    inputs:
+     command: publish
+     publishWebProjects: false
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-android --configuration $(buildConfiguration)
+     --output $(outputDirectory)/Android
+     /p:AndroidPackageFormat=aab
+     /P:ApplicationDisplayVersion=1.1.$(Build.BuildId)
+     /p:ApplicationVersion=$(Build.BuildId)
+     /p:AndroidSigningKeyPass=$(KeystorePassword)
+     /p:AndroidSigningStorePass=$(KeystorePassword)
+     /p:AndroidSigningKeystore=$(System.DefaultWorkingDirectory)\\$(keystoreName)
+     /p:AndroidSigningKeyAlias=$(KeystoreAlias)
+     /p:AndroidKeyStore=true'
+     zipAfterPublish: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy Android files from Build to Staging'
+    inputs:
+      SourceFolder: '$(outputDirectory)/Android/QRTracker'
+      Contents: |
+        *Signed.apk
+        *Signed.aab
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/AndroidStaging'
+      CleanTargetFolder: true
+      OverWrite: true
+  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Android files'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/AndroidStaging'
+      ArtifactName: 'Android drop'
+      publishLocation: 'Container'
+
+  - task: AppStoreRelease@1
+    displayName: 'Push iOS App to App Store Connect'
+    inputs:
+      serviceEndpoint: 'Apple App Store Connect'
+      releaseTrack: 'TestFlight'
+      appIdentifier: 'com.linkedinlearning.qrtracker'
+      ipaPath: '$(Build.ArtifactStagingDirectory)/iOSStaging/*.ipa'
+      appType: 'iOS'
+      shouldSkipWaitingForProcessing: true
+      shouldSkipSubmission: true
+      appSpecificId: '6743451240'
+
+  - task: GooglePlayRelease@4
+    inputs:
+      serviceConnection: 'Google Play Console Connection'
+      applicationId: 'com.linkedinlearning.qrtracker'
+      action: 'SingleBundle'
+      bundleFile: '$(outputDirectory)/Android/QRTracker/*.aab'
+      track: 'internal'
+      isDraftRelease: true
+
+- job: Build_MacOS
+  displayName: 'Build MacOS'
+  pool:
+   vmImage: 'macos-15'
+   demands: xcode
+  condition: eq(1,2)
+  
+  steps:
+   
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '9.x'
+
+  - task: CmdLine@2
+    displayName: "dotnet workload restore"
+    inputs:
+      script: 'dotnet workload restore'
+  
+  - task: CmdLine@2
+    displayName: "Select a specific version of Xcode"
+    inputs:
+      script: 'sudo xcode-select -s /Applications/Xcode_16.3.app'
+
+  - task: InstallAppleCertificate@2
+    displayName: 'Add Distribution Certificate'
+    inputs:
+      certSecureFile: 'AppleDistributionCertificate.p12'
+      certPwd: '$(iOSCertPassword)'
+
+  - task: InstallAppleCertificate@2
+    displayName: 'Add Installer Certificate'
+    inputs:
+      certSecureFile: 'AppleMacInstallerCertificate.p12'
+      certPwd: '$(iOSCertPassword)'
+
+  - task: InstallAppleProvisioningProfile@1
+    displayName: 'Add MacOS Provisioning Profile'
+    inputs:
+      provProfileSecureFile: 'LinkedIn_Learning_QRTracker_Mac.provisionprofile'
+  
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project for MacOS'
+    inputs:
+     command: publish
+     publishWebProjects: false
+     projects: 'QRTracker/QrTracker.csproj'
+     arguments: '-f net9.0-maccatalyst --configuration $(buildConfiguration) 
+     --output $(outputDirectory)/MacOS -p:CodesignKey="$(codesignKey)"
+     -p:codesignProvision="$(codesignProvisioningProfileMac)"
+     -p:EnablePackageSigning=true
+     -p:PackageSigningKey="$(packagesignKey)"
+     -p:codesignEntitlements="Platforms/MacCatalyst/Entitlements.plist"
+     /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
+     /p:ApplicationDisplayVersion=1.1.$(Build.BuildId)
+     /p:ApplicationVersion=1.1.$(Build.BuildId)'
+     zipAfterPublish: false
+    env:
+      DISABLE_BITCODE: 'yes'
+  
+  - task: CopyFiles@2
+    displayName: 'Copy MacOS file from Build to Staging'
+    inputs:
+      SourceFolder: '$(outputDirectory)/MacOS/QRTracker'
+      Contents: 'QrTracker*.pkg'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/MacOSStaging'
+      CleanTargetFolder: true
+      OverWrite: true
+  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish MacOS files'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/MacOSStaging'
+      ArtifactName: 'MacOS drop'
+      publishLocation: 'Container'
+  
+  - task: AppStoreRelease@1
+    displayName: 'Push MacOS App to App Store Connect'
+    inputs:
+      serviceEndpoint: 'Apple App Store Connect'
+      releaseTrack: 'TestFlight'
+      appIdentifier: 'com.linkedinlearning.qrtracker'
+      ipaPath: '$(Build.ArtifactStagingDirectory)/MacOSStaging/*.pkg'
+      appType: 'macOS'
+      shouldSkipWaitingForProcessing: true
+      shouldSkipSubmission: true
+      appSpecificId: '6743451240' 

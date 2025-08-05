@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTracker", "QRTracker\QRTracker.csproj", "{A50953FD-E913-412F-94C2-49229855C053}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C589AEF1-0429-4A7B-B526-C6F89F762F4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTracker.DataAccess.Mock", "QRTracker.DataAccess.Mock\QRTracker.DataAccess.Mock.csproj", "{FEB80850-329E-4827-9C1E-7442D144EE34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTracker.Core", "QRTracker.Core\QRTracker.Core.csproj", "{2CFE46C9-573A-452E-A481-51F7FBE3F397}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTracker.Tests", "QRTracker.Tests\QRTracker.Tests.csproj", "{2AA86608-F2DA-46B1-B105-FC57D328327C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A50953FD-E913-412F-94C2-49229855C053}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A50953FD-E913-412F-94C2-49229855C053}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A50953FD-E913-412F-94C2-49229855C053}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A50953FD-E913-412F-94C2-49229855C053}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A50953FD-E913-412F-94C2-49229855C053}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEB80850-329E-4827-9C1E-7442D144EE34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEB80850-329E-4827-9C1E-7442D144EE34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEB80850-329E-4827-9C1E-7442D144EE34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEB80850-329E-4827-9C1E-7442D144EE34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CFE46C9-573A-452E-A481-51F7FBE3F397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CFE46C9-573A-452E-A481-51F7FBE3F397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CFE46C9-573A-452E-A481-51F7FBE3F397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CFE46C9-573A-452E-A481-51F7FBE3F397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AA86608-F2DA-46B1-B105-FC57D328327C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AA86608-F2DA-46B1-B105-FC57D328327C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AA86608-F2DA-46B1-B105-FC57D328327C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AA86608-F2DA-46B1-B105-FC57D328327C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
