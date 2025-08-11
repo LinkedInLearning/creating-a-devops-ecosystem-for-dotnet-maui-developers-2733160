@@ -1,6 +1,8 @@
 # Creating a DevOps Ecosystem for .NET Maui Developers
 This is the repository for the LinkedIn Learning course Creating a DevOps Ecosystem for .NET Maui Developers. The full course is available from [LinkedIn Learning][lil-course-url].
 
+![lil-thumbnail-url]
+
 ## Course Description
 
 The DevOps ecosystem is a core piece required to develop mobile applications quickly and to control quality. MAUI was never tied into the Microsoft AppCenter, but with the retirement of AppCenter, we can see why this choice was made. In this course, Kevin Ford—an independent machine learning and mobile consultant—explains in detail how MAUI developers can set up a DevOps pipeline without relying on AppCenter. From build to testing and deployment, dive into a wide variety of DevOps processes that you can use in your MAUI applications. This course prepares you to create and customize a DevOps ecosystem that is specific to your needs.
